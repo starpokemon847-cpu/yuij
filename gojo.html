@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supabase Login</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<h2>Login / Signup</h2>
+
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+
+<button onclick="signUp()">Sign Up</button>
+<button onclick="signIn()">Login</button>
+
+<h3 id="msg"></h3>
+
+<script>
+  const supabaseUrl = 'https://dijrvstjhaalbcinvisd.supabase.co'
+  const supabaseKey = 'sb_publishable_F9DA80UrkSB-EQF-kejFRQ__F-eCGhH'
+
+  const supabaseClient = supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  )
+
+  async function signUp() {
+    const email = document.getElementById('email').value
+    const password = document.getElementById('password').value
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password
+    })
+
+    if (error) {
+      document.getElementById('msg').innerText = error.message
+      return
+    }
+
+    // store user profile
+    await supabaseClient.from('users_profile').insert({
+      id: data.user.id,
+      email: email
+    })
+
+    document.getElementById('msg').innerText = 'Signup successful!'
+  }
+
+  async function signIn() {
+    const email = document.getElementById('email').value
+    const password = document.getElementById('password').value
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      document.getElementById('msg').innerText = error.message
+    } else {
+      document.getElementById('msg').innerText = 'Login successful!'
+      console.log(data.user)
+    }
+  }
+</script>
+
+</body>
+</html>
